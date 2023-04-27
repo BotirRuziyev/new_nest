@@ -1,18 +1,43 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpCode, Param, ParseIntPipe, Put, Delete } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { TeachersDto } from './teachers-dto/teachers-dto';
+import { CreateTeachersDto } from './dto/create-teachers-dto';
+import { IBaseController } from 'src/base';
+import { Teachers } from '@prisma/client';
+import { UpdateTeachersDto } from './dto/update-teachers-dto';
+import { TeachersService } from './teachers.service';
 
 @Controller('teachers')
-export class TeachersController {
-    constructor(private _prisma: PrismaService) { }
+export class TeachersController implements IBaseController<Teachers, CreateTeachersDto, UpdateTeachersDto> {
+    constructor(private service: TeachersService) { }
+
+    @HttpCode(200)
     @Get()
-    async getAll() {
-        return this._prisma.teachers.findMany({})
+    getAll(): Promise<Teachers[]> {
+        return this.service.getAll()
     }
 
+    @HttpCode(201)
     @Post()
-    async create(@Body() data: TeachersDto) {
-        return this._prisma.teachers.create({ data: data })
+    create(dto: CreateTeachersDto): Promise<Teachers> {
+        return this.service.create(dto)
+    }
+
+    @HttpCode(200)
+    @Get(":id")
+    getById(@Param("id", ParseIntPipe) id: number): Promise<Teachers> {
+        return this.service.getById(id)
+    }
+
+    @HttpCode(200)
+    @Put(":id")
+    updateId(@Param("id", ParseIntPipe) id: number, @Body() dto: UpdateTeachersDto): Promise<Teachers> {
+        return this.service.updateId(id,dto)
+    }
+
+    @HttpCode(200)
+    @Delete(":id")
+    deleteId(@Param("id", ParseIntPipe) id: number,): Promise<Teachers> {
+        return this.service.deleteId(id)
     }
 
 }

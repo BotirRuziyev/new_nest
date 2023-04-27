@@ -9,7 +9,7 @@ export class GroupService implements IBaseService<Group, CreateGroupDto, UpdateG
     constructor(private _prisma: PrismaService){}
 
     async getAll(): Promise<Group[]>{
-        return this._prisma.group.findMany({})
+        return this._prisma.group.findMany({select: {id: true, group_orientation: true ,Teachers: {select: {name: true, group_name: true}} }});
     }
 
     async create(data: CreateGroupDto): Promise<Group> {

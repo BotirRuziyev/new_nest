@@ -1,5 +1,4 @@
 import { Controller, Get, Post, Body, HttpCode, Put, Param, ParseIntPipe, Delete } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGroupDto } from './dto/create-group-dto';
 import { IBaseController } from 'src/base';
 import { Group } from '@prisma/client';

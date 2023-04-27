@@ -1,28 +1,42 @@
-import { Controller, Get, Post, Body, Put, Param, ParseIntPipe, Delete } from '@nestjs/common';
-import { StudentsDto } from './students-dto/students-dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { Controller, Get, Post, Body, Put, Param, ParseIntPipe, Delete, HttpCode } from '@nestjs/common';
+import { CreaeteStudentDto } from './dto/creaete-student-dto';
+import { IBaseController } from 'src/base';
+import { Students } from '@prisma/client';
+import { UpdateStudentDto } from './dto';
+import { StudentsService } from './students.service';
 
 @Controller('students')
-export class StudentsController {
-    constructor(private _prisma: PrismaService) { }
+export class StudentsController implements IBaseController<Students, CreaeteStudentDto, UpdateStudentDto>  {
+    constructor(private service: StudentsService) { }
 
+    @HttpCode(200)
     @Get()
-    async getAll() {
-        return this._prisma.students.findMany({})
+    getAll(): Promise<Students[]> {
+        return this.service.getAll();
     }
 
+    @HttpCode(200)
+    @Get(':id')
+    getById(@Param('id', ParseIntPipe) id: number): Promise<Students>{
+     return this.service.getById(id);
+    }
+
+    @HttpCode(200)
     @Post()
-    async create(@Body() data: StudentsDto) {
-        return this._prisma.students.create({ data: data })
+    create(dto: CreaeteStudentDto): Promise<Students> {
+        return this.service.create(dto);
     }
 
+    @HttpCode(200)
     @Put(":id")
-    async updateId(@Param("id", ParseIntPipe) id: number, @Body() data: StudentsDto) {
-        return this._prisma.students.update({ where: { id }, data })
+    updateId(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateStudentDto): Promise<Students>{
+        return this.service.updateId(id, dto);
     }
 
+    @HttpCode(200)
     @Delete(":id")
-    async deleteId(@Param("id", ParseIntPipe) id: number) {
-        return this._prisma.students.delete({ where: { id } })
+    deleteId(@Param('id', ParseIntPipe) id: number): Promise<Students> {
+        return this.service.deleteId(id);
     }
+    
 }
